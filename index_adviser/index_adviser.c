@@ -721,7 +721,7 @@ ExplainOneQuery_callback(	Query			*query,
 	actual_plan = standard_planner( query, 0, params );
 
 	/* run it (if needed) and produce output */
-	ExplainOnePlan( actual_plan, params, stmt, tstate );
+	ExplainOnePlan( actual_plan, stmt, queryString, params, tstate );
 
 	/* re-plan the query */
 	new_plan = index_adviser( queryCopy, 0, params, actual_plan, true );
@@ -736,7 +736,7 @@ ExplainOneQuery_callback(	Query			*query,
 
 		do_text_output_oneline(tstate, ""); /* separator line */
 		do_text_output_oneline(tstate, "** Plan with hypothetical indexes **");
-		ExplainOnePlan( new_plan, params, stmt, tstate );
+		ExplainOnePlan( new_plan, stmt, queryString, params, tstate );
 
 	    explain_get_index_name_hook = NULL;
 
@@ -1555,7 +1555,7 @@ scan_group_clause(	List* const groupList,
 	foreach( cell, groupList )
 	{
 		/* convert to group-element */
-		const GroupClause* const groupElm = (const GroupClause*)lfirst( cell );
+		const SortGroupClause* const groupElm = (const SortGroupClause*)lfirst( cell );
 
 		/* get the column the group-clause is for */
 		const TargetEntry* const targetElm = list_nth( targetList,
